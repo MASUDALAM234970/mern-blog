@@ -25,8 +25,17 @@ app.listen(3000, () => {
   console.log(`Server is running on http://localhost:3000`);
 });
 
-//Add error handling AFTER all routes
+// //Add error handling AFTER all routes
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send("Something went wrong!");
+// });
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something went wrong!");
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
 });
