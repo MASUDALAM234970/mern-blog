@@ -5,30 +5,37 @@ import { errorHandler } from "../utils/error.js";
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
+
+  // Validate input fields
   if (
     !username ||
     !email ||
     !password ||
-    username == "" ||
-    email == "" ||
-    password == ""
+    username === "" ||
+    email === "" ||
+    password === ""
   ) {
-    next(errorHandler(400, "All fields are required"));
+    return next(errorHandler(400, "All fields are required"));
   }
-  const hashedpassword = bcryptjs.hashSync(password, 10);
-  const newUser = new User({
-    username,
-    email,
-    password: hashedpassword,
-  });
 
   try {
+    // Hash the password
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    // Create a new user instance
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    // Save the new user to the database
     await newUser.save();
-    console.log(req.body); // Log the request body for debugging
-    res.status(200).json({ message: "Hey Dear Signup successful !" });
+
+    // Send success response
+    res.status(200).json({ message: "Signup successful!" });
   } catch (error) {
-    // console.error("Error in signup:", error);
-    //res.status(500).json({ error: "Something went wrong" + error.message });
+    // Pass error to error-handling middleware
     next(error);
   }
 };
