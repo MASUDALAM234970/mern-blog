@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DashSidebar from "../Component/DashSidebar";
+import DashProfile from "../Component/DashProfile";
 const Dashboard = () => {
   const location = useLocation();
   const [tab, setTabs] = useState("");
@@ -12,17 +13,15 @@ const Dashboard = () => {
       console.log(tabFromUrl);
     }
   }, [location.search]);
-
   return (
-    <div>
-      <div className="">
-        {/* sidebar*/}
+    <div className="min-h-screen flex flex-col md:flex-row">
+      <div className="md:w-56">
+        {/* Sidebar */}
         <DashSidebar />
       </div>
-      <div className="">
-        {/* profile..... */}
-        {tab == "profile" && <div>Profile</div>}
-      </div>
+      {/* profile... */}
+      {tab === "profile" && <DashProfile />}
+      {/* posts... */}
     </div>
   );
 };
