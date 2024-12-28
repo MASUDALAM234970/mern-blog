@@ -5,6 +5,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
+import { signoutSuccess } from "../redux/user/userSlice";
 
 export const Header = () => {
   const path = useLocation().pathname; // Get current pathname
@@ -20,6 +21,24 @@ export const Header = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Searching for:", searchTerm);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to sign out. Please try again.");
+      } else {
+        dispatch(signoutSuccess());
+      }
+
+      //window.location.href = "/";
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -84,7 +103,7 @@ export const Header = () => {
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={handleSignOut}>Sign out</Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/sign-in">
