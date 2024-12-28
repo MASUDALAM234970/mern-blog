@@ -1,16 +1,24 @@
 import React, { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, TextInput } from "flowbite-react";
 import { CircularProgressbar } from "react-circular-progressbar";
+
 import "react-circular-progressbar/dist/styles.css";
+
+import {
+  updateStart,
+  updateFailure,
+  updateSuccess,
+} from "../redux/user/userSlice";
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
-
+  const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(0);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [formData, setFormData] = useState({});
 
   const filePickerRef = useRef(null);
 
@@ -41,16 +49,46 @@ export default function DashProfile() {
       console.log(result.url);
       setImageFileUrl(result.secure_url);
       setImageFileUploadProgress(100);
+      setFormData({ ...formData, profilePicture: result.url });
     } catch (error) {
       setImageFileUploadError(error.message);
       setImageFileUploadProgress(0);
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (Object.keys(formData).length === 0) {
+      return;
+    }
+
+    try {
+      dispatch(updateStart());
+      const response = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong!");
+      } else {
+        dispatch(updateSuccess(data));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center">Profile</h1>
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Hidden File Input */}
         <input
           type="file"
@@ -102,14 +140,21 @@ export default function DashProfile() {
           id="username"
           placeholder="Username"
           defaultValue={currentUser.username}
+          onChange={handleChange}
         />
         <TextInput
           type="email"
           id="email"
           placeholder="Email"
           defaultValue={currentUser.email}
+          onChange={handleChange}
         />
-        <TextInput type="password" id="password" placeholder="Password" />
+        <TextInput
+          type="password"
+          id="password"
+          placeholder="Password"
+          onChange={handleChange}
+        />
 
         {/* Update Button */}
         <Button type="submit" gradientDuoTone="purpleToBlue" outline>
