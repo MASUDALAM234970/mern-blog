@@ -14,11 +14,13 @@ import {
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [imageFile, setImageFile] = useState(null);
+  // const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(0);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
+  const [updateUserSuccess, setUpdatUserSuccess] = useState(null);
 
   const filePickerRef = useRef(null);
 
@@ -62,6 +64,7 @@ export default function DashProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (Object.keys(formData).length === 0) {
+      setUpdateUserError("No changes detected");
       return;
     }
 
@@ -77,12 +80,16 @@ export default function DashProfile() {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong!");
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
       } else {
         dispatch(updateSuccess(data));
+        setUpdatUserSuccess("User's Profile  Updated Successfully");
       }
     } catch (error) {
       console.error(error);
+      dispatch(updateFailure(error.message));
+      setUpdateUserError(error.message);
     }
   };
   return (
@@ -167,6 +174,16 @@ export default function DashProfile() {
         <span className="cursor-pointer">Delete Account</span>
         <span className="cursor-pointer">Sign Out</span>
       </div>
+      {updateUserSuccess && (
+        <Alert color="success" className="mt-3">
+          {updateUserSuccess}
+        </Alert>
+      )}
+      {updateUserError && (
+        <Alert color="failure" className="mt-3">
+          {updateUserError}
+        </Alert>
+      )}
     </div>
   );
 }
