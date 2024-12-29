@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 import "react-circular-progressbar/dist/styles.css";
 
@@ -17,12 +18,13 @@ import {
 } from "../redux/user/userSlice";
 
 export default function DashProfile() {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   // const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(0);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [imageFileUploading, setImageFileUploading] = useState(false);
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
   const [updateUserSuccess, setUpdatUserSuccess] = useState(null);
@@ -209,9 +211,25 @@ export default function DashProfile() {
         />
 
         {/* Update Button */}
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Update
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={loading || imageFileUploading}
+        >
+          {loading ? "Loading..." : "Update"}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={"/create-post"}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a Post
+            </Button>
+          </Link>
+        )}
       </form>
 
       {/* Additional Actions */}
