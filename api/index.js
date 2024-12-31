@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
+import postRoures from "./routes/post.route.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(cookieParser()); // Add middleware for cookie parsing
 
 app.use("/api/user", UserRoutes); // Use routes for `/api/user`
 app.use("/api/auth", authRoutes); // Use routes for `/api/auth`
+app.use("/api/post", postRoures); // Use routes for `/api/post`
 
 app.listen(3000, () => {
   console.log(`Server is running on http://localhost:3000`);
