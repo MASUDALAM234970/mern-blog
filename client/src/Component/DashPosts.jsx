@@ -18,7 +18,7 @@ export default function DashPosts() {
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
-          if (data.posts.length < 3) {
+          if (data.posts.length < 7) {
             setShowMore(false);
           }
         }
@@ -40,7 +40,7 @@ export default function DashPosts() {
       const data = await res.json();
       if (res.ok) {
         setUserPosts((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 3) {
+        if (data.posts.length < 7) {
           setShowMore(false);
         }
       }
