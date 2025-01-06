@@ -1,4 +1,5 @@
 import Post from "../models/post.model.js";
+import { errorHandler } from "../utils/error.js";
 
 export const create = async (req, res, next) => {
   console.log(req.user);
@@ -78,5 +79,16 @@ export const getposts = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+export const deletepost = async (req, res, next) => {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+    return next(errorHandler(403, "You are not authorized to delete a post"));
+  }
+  try {
+    await Post.findByIdAndDelete({ _id: req.params.postId });
+    res.status(200).json("Post deleted successfully");
+  } catch (err) {
+    next(err);
   }
 };
