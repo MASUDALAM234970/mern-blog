@@ -15,7 +15,7 @@ export const Header = () => {
   const { theme } = useSelector((state) => state.theme);
 
   const [searchTerm, setSearchTerm] = useState(""); // Search term state
-  console.log(currentUser);
+  // console.log(currentUser);
 
   // Form submission handler
   const handleSubmit = (e) => {
@@ -30,7 +30,7 @@ export const Header = () => {
       });
       if (!res.ok) {
         const data = await res.json(); // Ensure res.json() is awaited
-        console.log(data.message);
+        //console.log(data.message);
       } else {
         dispatch(signoutSuccess());
         // Optionally, you can redirect or show a success message
