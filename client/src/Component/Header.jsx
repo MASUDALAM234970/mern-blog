@@ -23,21 +23,20 @@ export const Header = () => {
     console.log("Searching for:", searchTerm);
   };
 
-  const handleSignOut = async () => {
+  const handleSignout = async () => {
     try {
-      const response = await fetch("/api/user/signout", {
+      const res = await fetch("/api/user/signout", {
         method: "POST",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to sign out. Please try again.");
+      if (!res.ok) {
+        const data = await res.json(); // Ensure res.json() is awaited
+        console.log(data.message);
       } else {
         dispatch(signoutSuccess());
+        // Optionally, you can redirect or show a success message
       }
-
-      //window.location.href = "/";
     } catch (error) {
-      console.error(error);
+      console.log(error.message);
     }
   };
 
@@ -103,7 +102,7 @@ export const Header = () => {
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignOut}>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/sign-in">

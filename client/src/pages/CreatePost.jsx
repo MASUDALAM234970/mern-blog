@@ -1,12 +1,12 @@
-import React, { useState } from "react";
 import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
+import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useNavigate } from "react-router-dom";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { data, useNavigate } from "react-router-dom";
 
-export const CreatePost = () => {
+export default function CreatePost() {
   const [file, setFile] = useState(null); // Selected file
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(0); // Progress indicator
   const [imageFileUploadError, setImageFileUploadError] = useState(null); // Error for image upload
@@ -15,6 +15,36 @@ export const CreatePost = () => {
   const [publishError, setPublishError] = useState(null); // Error for post publish
   const [publishSuccess, setPublishSuccess] = useState(null); // Success for post publish
   const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Form data before submission:", formData);
+    try {
+      setPublishError(null); // Clear previous errors
+      setPublishSuccess(null); // Clear previous success
+
+      const response = await fetch("/api/post/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      console.log("Post creation API response:", response);
+      const result = await response.json();
+      console.log("API result:", result);
+
+      if (!response.ok) {
+        setPublishError(result.message || "Failed to create post.");
+      } else {
+        setPublishSuccess("Post created successfully!");
+        setFormData({}); // Reset form data
+        navigate(`/post/${result.slug}`);
+      }
+    } catch (error) {
+      console.error("Error during submission:", error);
+      setPublishError(error.message || "An error occurred.");
+    }
+  };
 
   const handleUploadImage = async () => {
     if (!file) {
@@ -57,42 +87,11 @@ export const CreatePost = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Form data before submission:", formData);
-    try {
-      setPublishError(null); // Clear previous errors
-      setPublishSuccess(null); // Clear previous success
-
-      const response = await fetch("/api/post/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      console.log("Post creation API response:", response);
-      const result = await response.json();
-      console.log("API result:", result);
-
-      if (!response.ok) {
-        setPublishError(result.message || "Failed to create post.");
-      } else {
-        setPublishSuccess("Post created successfully!");
-        setFormData({}); // Reset form data
-        navigate(`/post/${result.slug}`);
-      }
-    } catch (error) {
-      console.error("Error during submission:", error);
-      setPublishError(error.message || "An error occurred.");
-    }
-  };
-
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a Post</h1>
       <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
-        {/* Title and Category */}
-        <div className="flex flex-col gap-4 sm:flex-row justify-center">
+        <div className="flex flex-col sm:flex-row justify-between">
           <TextInput
             type="text"
             placeholder="Title"
@@ -103,6 +102,7 @@ export const CreatePost = () => {
               setFormData({ ...formData, title: e.target.value })
             }
           />
+
           <Select
             id="category"
             className="flex-1"
@@ -117,16 +117,11 @@ export const CreatePost = () => {
             <option value="node.js">Node.js</option>
           </Select>
         </div>
-
-        {/* Image Upload */}
         <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
           <FileInput
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              const selectedFile = e.target.files[0];
-              setFile(selectedFile || null);
-            }}
+            onChange={(e) => setFile(e.target.files[0])}
           />
           <Button
             type="button"
@@ -166,8 +161,6 @@ export const CreatePost = () => {
             className="w-full h-72 object-cover"
           />
         )}
-
-        {/* Post Content */}
         <ReactQuill
           theme="snow"
           placeholder="Write something ....."
@@ -195,4 +188,4 @@ export const CreatePost = () => {
       </form>
     </div>
   );
-};
+}
