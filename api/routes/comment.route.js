@@ -2,6 +2,7 @@ import express from "express";
 import { verifyTokens } from "../utils/verifyUser.js";
 import {
   createComment,
+  deleteComment,
   editComment,
   getPostComments,
   likeComment,
@@ -13,7 +14,7 @@ router.post("/create", verifyTokens, createComment);
 router.get("/getPostComments/:postId", getPostComments);
 router.put("/likeComment/:commentId", verifyTokens, likeComment);
 router.put("/editComment/:commentId", verifyTokens, editComment);
-//router.delete("/deleteComment/:commentId", verifyToken, deleteComment);
+router.delete("/deleteComment/:commentId", verifyTokens, deleteComment);
 //router.get("/getcomments", verifyToken, getcomments);
 
 export default router;
