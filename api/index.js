@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.route.js";
 import postRoures from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ mongoose
   .catch((err) => {
     console.error("Database connection error:", err);
   });
-
+const __dirname = path.resolve();
 const app = express();
 app.use(express.json()); // Add middleware for JSON parsing
 app.use(cookieParser()); // Add middleware for cookie parsing
@@ -26,6 +27,11 @@ app.use("/api/user", UserRoutes); // Use routes for `/api/user`
 app.use("/api/auth", authRoutes); // Use routes for `/api/auth`
 app.use("/api/post", postRoures); // Use routes for `/api/post`
 app.use("/api/comment", commentRoutes);
+
+app.use(express.static(path.join(__dirname, "/client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 
 app.listen(3000, () => {
   console.log(`Server is running on http://localhost:3000`);
