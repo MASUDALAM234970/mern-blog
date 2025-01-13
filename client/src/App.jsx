@@ -5,7 +5,7 @@ import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import { Projects } from "./pages/Projects";
-import { Header } from "./Component/Header";
+
 import Footer from "./Component/Footer";
 import PrivateRoute from "./Component/PrivateRoute";
 import OnlyAdminPrivateRoute from "./Component/OnlyAdminPrivateRoute ";
@@ -14,6 +14,8 @@ import UpdatePost from "./pages/UpdatePost";
 import NoPage from "./pages/NoPage";
 import PostPage from "./pages/PostPage";
 import ScrollToTop from "./Component/ScrollToTop";
+import Search from "./pages/Search";
+import Header from "./Component/Header";
 
 export default function App() {
   return (
@@ -25,6 +27,7 @@ export default function App() {
         <Route path="/about" element={<About />}></Route>
         <Route path="/sign-in" element={<SignIn />}></Route>
         <Route path="/sign-up" element={<SignUp />}></Route>
+        <Route path="/search" element={<Search />}></Route>
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />}></Route>
         </Route>
